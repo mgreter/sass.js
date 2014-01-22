@@ -2891,6 +2891,8 @@ function copyTempDouble(ptr) {
         }
         return link.node_ops.readlink(link);
       },stat:function (path, dontFollow) {
+        if (typeof Module['stat'] == "function")
+        { Module['stat'].apply(this, arguments); }
         var lookup = FS.lookupPath(path, { follow: !dontFollow });
         var node = lookup.node;
         if (!node.node_ops.getattr) {
