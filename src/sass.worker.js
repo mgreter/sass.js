@@ -15,7 +15,7 @@
 }(this, function () {
   'use strict';
   /*global Worker*/
-  
+
   var Sass = {
     _worker: null,
     _callbacks: {},
@@ -72,9 +72,10 @@
       }, callback);
     },
 
-    compile: function(text, callback) {
+    compile: function(text, callback, options) {
       Sass._dispatch({
         command: 'compile',
+        options: options,
         text: text
       }, callback);
     },
