@@ -71,7 +71,7 @@ if (ENVIRONMENT_IS_NODE) {
     globalEval(read(f));
   };
   Module['arguments'] = process['argv'].slice(2);
-
+  
 }
 else if (ENVIRONMENT_IS_SHELL) {
   Module['print'] = print;
@@ -8326,6 +8326,7 @@ var Sass = {
   },
   _files: {},
   _path: '/sass/',
+  _module: Module,
 
   options: function(options) {
     if (typeof options !== 'object') {
@@ -8416,7 +8417,7 @@ var Sass = {
     }
   },
 
-  compile: function(text) {
+  compile: function(text, callback) {
     try {
       // in C we would use char *ptr; foo(&ptr) - in EMScripten this is not possible,
       // so we allocate a pointer to a pointer on the stack by hand
@@ -8444,19 +8445,24 @@ var Sass = {
         var error = errorPointer.match(/^source string:(\d+):/);
         var message = errorPointer.slice(error[0].length).replace(/(^\s+)|(\s+$)/g, '');
         // throw new Error(message, 'string', error[1]);
-        return {
+        result = {
           line: Number(error[1]),
           message: message
         };
+        if (callback) callback(result);
+        return result;
       }
 
+      if (callback) callback(result);
       return result;
     } catch(e) {
       // in case libsass.js was compiled without exception support
-      return {
+      result = {
         line: null,
         message: 'Unknown Error: you need to compile libsass.js with exceptions to get proper error messages'
       };
+      if (callback) callback(result);
+      return result;
     }
   }
 };
